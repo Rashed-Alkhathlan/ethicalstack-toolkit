@@ -314,7 +314,7 @@ def annotate_batch(payload: AnnotateBatchRequest) -> AnnotateBatchResponse:
 
 
 DASHBOARD_DIR = Path(__file__).resolve().parents[2] / "dashboard"
-EXTENSION_DIR = Path(__file__).resolve().parents[2] / "browser_extension"
+EXTENSION_DIR = Path(__file__).resolve().parents[2] / "browser_extension_ngrok"
 EXTENSION_ZIP = Path(__file__).resolve().parents[2] / "data" / "ethicalstack-extension.zip"
 
 

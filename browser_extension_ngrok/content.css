@@ -1,0 +1,219 @@
+/* ── Toast ─────────────────────────────────────────────────────────────── */
+
+.ethicalstack-toast {
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    width: 320px;
+    background: #ffffff;
+    border: 1px solid #e2ded7;
+    border-radius: 12px;
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.16);
+    padding: 12px 14px;
+    z-index: 2147483647;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    color: #1f1f1f;
+    animation: ethicalstack-fade-in 180ms ease-out;
+}
+
+.ethicalstack-toast-close {
+    position: absolute;
+    top: 6px;
+    right: 8px;
+    border: none;
+    background: transparent;
+    font-size: 16px;
+    line-height: 1;
+    cursor: pointer;
+    color: #5b544b;
+}
+
+.ethicalstack-badge {
+    position: absolute;
+    top: 8px;
+    right: 28px;
+    font-size: 10px;
+    color: #8a857d;
+}
+
+.ethicalstack-toast h4 {
+    margin: 0 0 6px 0;
+    font-size: 14px;
+}
+
+.ethicalstack-toast .ethicalstack-subtitle {
+    margin: 6px 0 6px 0;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.ethicalstack-toast p {
+    margin: 0 0 6px 0;
+    font-size: 12px;
+    line-height: 1.35;
+}
+
+.ethicalstack-divider {
+    height: 1px;
+    background: #e2ded7;
+    margin: 6px 0 8px;
+}
+
+.ethicalstack-toast .meta {
+    font-size: 11px;
+    color: #5b544b;
+}
+
+.ethicalstack-toast.error {
+    border-color: #c75b4f;
+}
+
+/* ── Toast dark mode ───────────────────────────────────────────────────── */
+
+.ethicalstack-toast.dark {
+    background: #24262b;
+    border-color: #333842;
+    color: #f1f1f1;
+}
+
+.ethicalstack-toast.dark h4 {
+    color: #f1f1f1;
+}
+
+.ethicalstack-toast.dark .meta {
+    color: #b3b4b7;
+}
+
+.ethicalstack-toast.dark .ethicalstack-toast-close {
+    color: #d1d2d6;
+}
+
+.ethicalstack-toast.dark .ethicalstack-badge {
+    color: #b3b4b7;
+}
+
+.ethicalstack-toast.dark .ethicalstack-divider {
+    background: #333842;
+}
+
+/* ── Shared keyframe ───────────────────────────────────────────────────── */
+
+@keyframes ethicalstack-fade-in {
+    from {
+        opacity: 0;
+        transform: translateY(-6px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ── Glossary highlight (auto-detected terms) ──────────────────────────── */
+
+mark.ethicalstack-hl {
+    background: rgba(46, 170, 220, 0.14);
+    color: inherit;
+    border-bottom: 1.5px dashed rgba(46, 170, 220, 0.55);
+    border-radius: 2px;
+    padding: 0 1px;
+    cursor: help;
+    transition: background 160ms ease, border-color 160ms ease;
+}
+
+mark.ethicalstack-hl:hover {
+    background: rgba(46, 170, 220, 0.28);
+    border-bottom-color: rgba(46, 170, 220, 0.9);
+}
+
+/* ── Tooltip (hover definition) ────────────────────────────────────────── */
+
+.ethicalstack-tooltip {
+    position: absolute;
+    z-index: 2147483646;
+    min-width: 220px;
+    max-width: 380px;
+    background: #ffffff;
+    border: 1px solid #e2ded7;
+    border-radius: 10px;
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.18);
+    padding: 10px 14px;
+    font-family: "Segoe UI", Tahoma, sans-serif;
+    font-size: 13px;
+    color: #1f1f1f;
+    line-height: 1.45;
+    pointer-events: none;
+    opacity: 0;
+    transform: translateY(4px);
+    transition: opacity 160ms ease, transform 160ms ease, pointer-events 0s 160ms;
+}
+
+.ethicalstack-tooltip.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: auto;
+    transition: opacity 160ms ease, transform 160ms ease, pointer-events 0s 0s;
+}
+
+.ethicalstack-tooltip-term {
+    font-weight: 700;
+    font-size: 14px;
+    margin-bottom: 4px;
+    color: #1b5f7a;
+}
+
+.ethicalstack-tooltip-def {
+    font-size: 12px;
+    color: #3b3832;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.ethicalstack-tooltip-def.ar {
+    direction: rtl;
+    text-align: right;
+}
+
+.ethicalstack-tooltip-row {
+    font-size: 12px;
+    margin-bottom: 2px;
+}
+
+.ethicalstack-tooltip-lang {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    background: #efe8dc;
+    color: #5b544b;
+    padding: 1px 5px;
+    border-radius: 4px;
+    margin-right: 4px;
+    vertical-align: middle;
+}
+
+/* ── Tooltip dark-mode (follows page prefers-color-scheme) ─────────── */
+
+@media (prefers-color-scheme: dark) {
+    mark.ethicalstack-hl {
+        background: rgba(46, 170, 220, 0.12);
+        border-bottom-color: rgba(46, 170, 220, 0.45);
+    }
+    mark.ethicalstack-hl:hover {
+        background: rgba(46, 170, 220, 0.24);
+    }
+    .ethicalstack-tooltip {
+        background: #24262b;
+        border-color: #333842;
+        color: #f1f1f1;
+    }
+    .ethicalstack-tooltip-term {
+        color: #7bb3cf;
+    }
+    .ethicalstack-tooltip-def {
+        color: #c8c9cc;
+    }
+    .ethicalstack-tooltip-lang {
+        background: #2f333b;
+        color: #d1d2d6;
+    }
+}

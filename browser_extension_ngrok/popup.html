@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>EthicalStack Glossary</title>
+    <link rel="stylesheet" href="popup.css" />
+</head>
+
+<body>
+    <header>
+        <div class="title">EthicalStack Glossary</div>
+        <div class="header-actions">
+            <button id="lang-toggle" type="button" class="lang-btn" title="Switch language">EN</button>
+            <a href="#" id="open-options" class="link">Options</a>
+        </div>
+    </header>
+
+    <section class="lookup">
+        <input id="query-input" type="text" placeholder="Lookup a term" />
+        <button id="lookup-button" type="button">Lookup</button>
+    </section>
+
+    <section id="status" class="status">Select text and use the right-click menu.</section>
+
+    <section id="results" class="results"></section>
+
+    <footer>
+        <div id="base-url" class="base-url"></div>
+        <div id="timestamp" class="timestamp"></div>
+    </footer>
+
+    <script src="popup.js" type="module"></script>
+</body>
+
+</html>

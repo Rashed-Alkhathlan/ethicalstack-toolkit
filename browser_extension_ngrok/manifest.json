@@ -1,0 +1,36 @@
+{
+    "manifest_version": 3,
+    "name": "EthicalStack Glossary",
+    "description": "Look up ethical AI glossary terms from selected text.",
+    "version": "0.1.0",
+    "action": {
+        "default_title": "EthicalStack Glossary",
+        "default_popup": "popup.html"
+    },
+    "background": {
+        "service_worker": "background.js",
+        "type": "module"
+    },
+    "permissions": [
+        "contextMenus",
+        "storage"
+    ],
+    "host_permissions": [
+        "http://*/*",
+        "https://*/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "<all_urls>"
+            ],
+            "js": [
+                "content.js"
+            ],
+            "css": [
+                "content.css"
+            ]
+        }
+    ],
+    "options_page": "options.html"
+}
