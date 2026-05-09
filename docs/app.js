@@ -946,7 +946,7 @@ async function runBenchmark() {
     try {
         const res = await fetch(`${API_BASE}/benchmark/stream?${params}`, {
             signal: benchAbortController.signal,
-            headers: { Accept: "text/event-stream" },
+            headers: { "Accept": "text/event-stream", "ngrok-skip-browser-warning": "1" },
         });
         if (!res.ok) {
             let msg = `${res.status} ${res.statusText}`;
