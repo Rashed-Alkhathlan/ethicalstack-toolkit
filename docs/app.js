@@ -609,8 +609,8 @@ const TOOL_DETAILS = {
                 <li>التخزين المحلي في <code>chrome.storage.local</code>؛ طلب شبكة واحد يومياً.</li>
             </ul>` },
         actions: [
-            { kind: "primary", href: "/extension/download", label: { en: "Download .zip", ar: "تنزيل الإضافة" } },
-            { kind: "ghost", href: "/dashboard/HUB.md", label: { en: "Install guide", ar: "دليل التثبيت" } },
+            { kind: "primary", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/extension/download", label: { en: "Download .zip", ar: "تنزيل الإضافة" } },
+            { kind: "ghost", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/dashboard/HUB.md", label: { en: "Install guide", ar: "دليل التثبيت" } },
         ],
     },
     api: {
