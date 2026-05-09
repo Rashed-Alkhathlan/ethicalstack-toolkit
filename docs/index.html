@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EthicalStack — Ethical AI Usage Auditor</title>
+    <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+    <div class="app">
+        <!-- ===== Sidebar ===== -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-head">
+                <div class="brand-mark">ES</div>
+                <div class="brand-meta">
+                    <div class="brand-title">EthicalStack</div>
+                    <div class="brand-sub" data-i18n="brand.sub">Ethical AI Usage Auditor</div>
+                </div>
+            </div>
+            <nav class="side-nav">
+                <a class="side-link active" data-view="dashboard" href="#dashboard">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
+                    <span data-i18n="nav.dashboard">Dashboard</span>
+                </a>
+                <a class="side-link" data-view="audit" href="#audit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                    <span data-i18n="nav.audit">Ethical Auditor</span>
+                </a>
+                <a class="side-link" data-view="explorer" href="#explorer">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
+                    <span data-i18n="nav.glossary">Glossary</span>
+                </a>
+                <a class="side-link" data-view="tools" href="#tools">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14.7 6.3a4 4 0 015.7 5.7L9 23.4 0.6 15l11.4-11.4a4 4 0 012.7 2.7z"/></svg>
+                    <span data-i18n="nav.tools">Tools</span>
+                </a>
+                <a class="side-link" data-view="history" href="#history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12a9 9 0 1 0 3-6.7"/><path d="M3 4v5h5"/><path d="M12 7v5l3 2"/></svg>
+                    <span data-i18n="nav.history">History</span>
+                </a>
+                <a class="side-link" data-view="contribute" href="#contribute">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
+                    <span data-i18n="nav.contribute">Contribute</span>
+                </a>
+            </nav>
+            <div class="sidebar-foot">
+                <a class="side-link" href="https://github.com/Qasim-11/AI-Glossary-Challenge-by-ICAIRE" target="_blank" rel="noopener">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 00-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0020 4.77 5.07 5.07 0 0019.91 1S18.73.65 16 2.48a13.38 13.38 0 00-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 005 4.77a5.44 5.44 0 00-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 009 18.13V22"/></svg>
+                    <span data-i18n="nav.repo">Repository</span>
+                </a>
+                <a class="side-link" href="/docs" target="_blank">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 11-2.83 2.83l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 11-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 11-2.83-2.83l.06-.06a1.65 1.65 0 00.33-1.82 1.65 1.65 0 00-1.51-1H3a2 2 0 110-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 112.83-2.83l.06.06a1.65 1.65 0 001.82.33H9a1.65 1.65 0 001-1.51V3a2 2 0 114 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 112.83 2.83l-.06.06a1.65 1.65 0 00-.33 1.82V9a1.65 1.65 0 001.51 1H21a2 2 0 110 4h-.09a1.65 1.65 0 00-1.51 1z"/></svg>
+                    <span data-i18n="nav.api">API Docs</span>
+                </a>
+            </div>
+        </aside>
+
+        <!-- ===== Main column ===== -->
+        <div class="main">
+            <!-- ===== Topbar ===== -->
+            <header class="topbar">
+                <div class="search-wrap">
+                    <svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    <input
+                        id="globalSearch"
+                        type="search"
+                        autocomplete="off"
+                        data-i18n-placeholder="search.placeholder"
+                        placeholder="Search a term — e.g. 'Bias', 'Differential Privacy'"
+                    />
+                    <kbd class="kbd-hint">/</kbd>
+                    <div id="suggestions" class="suggestions" hidden></div>
+                </div>
+                <div class="top-actions">
+                    <button class="lang-toggle" id="langToggle" title="Toggle language">
+                        <span class="lang-flag">🌐</span>
+                        <span id="langLabel">EN</span>
+                    </button>
+                    <div class="api-status" id="apiStatusWrap">
+                        <span class="dot" id="apiDot"></span>
+                        <span id="apiStatus" data-i18n="status.checking">checking…</span>
+                    </div>
+                    <div class="avatar" title="EthicalStack">ES</div>
+                </div>
+            </header>
+
+            <!-- ===== Content ===== -->
+            <div class="content">
+
+                <!-- ===== Dashboard view ===== -->
+                <section class="view active" id="view-dashboard">
+                    <div class="hero-card">
+                        <div class="hero-eyebrow">
+                            <span class="dot"></span>
+                            <span data-i18n="hero.eyebrow">Powered by Gemini 3.1 Flash Lite Preview</span>
+                        </div>
+                        <h1 data-i18n="hero.title">
+                            Audit whether AI is being used <span class="grad">ethically and responsibly</span>, in your real-world context.
+                        </h1>
+                        <p data-i18n="hero.subtitle">
+                            Score papers, model cards, specs, syllabi, and proposals against ten ethical-AI usage dimensions —
+                            anchored in the ICAIRE multilingual glossary, with text-grounded evidence and concrete recommendations.
+                        </p>
+                        <div class="hero-cta">
+                            <button class="btn primary" data-jump="audit" data-i18n="hero.cta_primary">Run an audit</button>
+                            <button class="btn ghost" data-jump="explorer" data-i18n="hero.cta_secondary">Browse glossary</button>
+                        </div>
+                    </div>
+
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <div class="stat-icon stat-icon-blue">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3 7h7l-5.5 4 2 7L12 16l-6.5 4 2-7L2 9h7z"/></svg>
+                            </div>
+                            <div class="stat-value" id="statTermsBig">—</div>
+                            <div class="stat-label" data-i18n="stats.terms">Glossary terms</div>
+                            <div class="stat-meta" data-i18n="stats.terms_meta">EN · AR · FR</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon stat-icon-mint">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                            </div>
+                            <div class="stat-value">10</div>
+                            <div class="stat-label" data-i18n="stats.dimensions">Ethical dimensions</div>
+                            <div class="stat-meta" data-i18n="stats.dimensions_meta">Responsible-AI usage focus</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon stat-icon-purple">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
+                            </div>
+                            <div class="stat-value">5+</div>
+                            <div class="stat-label" data-i18n="stats.tools">Tools &amp; SDKs</div>
+                            <div class="stat-meta" data-i18n="stats.tools_meta">API · CLI · MCP · Ext</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-icon stat-icon-amber">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M13 2L3 14h7l-1 8 10-12h-7z"/></svg>
+                            </div>
+                            <div class="stat-value" id="statBackend">—</div>
+                            <div class="stat-label" data-i18n="stats.backend">Audit backend</div>
+                            <div class="stat-meta" id="statBackendMeta" data-i18n="stats.backend_meta_check">checking…</div>
+                        </div>
+                    </div>
+
+                    <div class="dashboard-grid">
+                        <div class="card">
+                            <div class="card-head-row">
+                                <h3 data-i18n="dash.dimensions_title">Audit dimensions</h3>
+                                <span class="muted" data-i18n="dash.dimensions_sub">What we score</span>
+                            </div>
+                            <ul class="dim-list" id="dimList"></ul>
+                        </div>
+                        <div class="card">
+                            <div class="card-head-row">
+                                <h3 data-i18n="dash.recent_title">Recent audits</h3>
+                                <button class="link-btn" id="clearHistoryBtn" data-i18n="dash.recent_clear">Clear</button>
+                            </div>
+                            <div id="historyList" class="history-list">
+                                <div class="empty-mini" data-i18n="dash.recent_empty">No audits yet — paste some text into the auditor to get started.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Audit view ===== -->
+                <section class="view" id="view-audit">
+                    <div class="card">
+                        <div class="card-head">
+                            <div class="row">
+                                <h2 data-i18n="audit.title">Ethical AI Usage Auditor</h2>
+                                <span class="pill" id="backendPill" title="Active scoring backend">
+                                    <span class="dot"></span>
+                                    <span id="backendLabel" data-i18n="audit.backend_fallback">heuristic fallback</span>
+                                </span>
+                            </div>
+                            <p data-i18n="audit.subtitle">
+                                Paste an abstract, model card, technical spec, grant proposal, or syllabus.
+                                The auditor scores ten <em>ethical-AI usage</em> dimensions — anchored in the
+                                ICAIRE multilingual glossary — surfaces the evidence it found, and flags concrete
+                                responsible-AI gaps a reviewer should escalate.
+                            </p>
+                        </div>
+                        <div class="audit-grid">
+                            <div class="audit-input">
+                                <textarea
+                                    id="auditText"
+                                    rows="14"
+                                    data-i18n-placeholder="audit.input_placeholder"
+                                    placeholder="Paste research paper, abstract, technical doc, or model card here…"
+                                ></textarea>
+                                <div class="audit-actions">
+                                    <button id="runAuditBtn" class="btn primary" data-i18n="audit.run">Run Audit</button>
+                                    <button id="loadSampleBtn" class="btn ghost" data-i18n="audit.sample">Load sample</button>
+                                    <button id="clearAuditBtn" class="btn ghost" data-i18n="audit.clear">Clear</button>
+                                    <button id="downloadAuditBtn" class="btn ghost" disabled data-i18n="audit.download_json">Download JSON</button>
+                                    <button id="copyMarkdownBtn" class="btn ghost" disabled data-i18n="audit.copy_md">Copy as Markdown</button>
+                                </div>
+                                <div class="audit-meta" id="auditMeta" hidden></div>
+                                <div class="kbd-hints">
+                                    <span><kbd>Ctrl</kbd>+<kbd>Enter</kbd> <span data-i18n="audit.kbd_run">to run</span></span>
+                                </div>
+                            </div>
+                            <div class="audit-output" id="auditOutput">
+                                <div class="empty" data-i18n="audit.empty">Audit results will appear here.</div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Explorer view ===== -->
+                <section class="view" id="view-explorer">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="explorer.title">Glossary Explorer</h2>
+                            <p>
+                                <span id="explorerCount">—</span>
+                                <span data-i18n="explorer.subtitle">normalized AI &amp; data terms with English, Arabic, and French definitions and aliases. Click any term for details.</span>
+                            </p>
+                        </div>
+                        <div class="explorer-controls">
+                            <input id="explorerQuery" type="search" data-i18n-placeholder="explorer.filter" placeholder="Filter terms…" />
+                            <select id="explorerLanguage">
+                                <option value="" data-i18n="explorer.lang_all">All languages</option>
+                                <option value="english" data-i18n="explorer.lang_en">Has English</option>
+                                <option value="arabic" data-i18n="explorer.lang_ar">Has Arabic</option>
+                                <option value="french" data-i18n="explorer.lang_fr">Has French</option>
+                            </select>
+                            <label class="switch">
+                                <input type="checkbox" id="explorerSemantic" />
+                                <span data-i18n="explorer.semantic">Semantic search</span>
+                            </label>
+                        </div>
+                        <div class="term-list" id="termList"></div>
+                        <div class="pagination">
+                            <button id="prevPage" class="btn ghost" data-i18n="explorer.prev">Prev</button>
+                            <span id="pageInfo"></span>
+                            <button id="nextPage" class="btn ghost" data-i18n="explorer.next">Next</button>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Tools view ===== -->
+                <section class="view" id="view-tools">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="tools.title">Tools &amp; Downloads</h2>
+                            <p data-i18n="tools.subtitle">Same backend, multiple surfaces. Pick the one that fits your workflow.</p>
+                        </div>
+                        <div class="tool-grid" id="toolGrid">
+                            <article class="tool" data-tool="extension">
+                                <div class="tool-icon">🌐</div>
+                                <h3 data-i18n="tools.ext_title">Browser Extension</h3>
+                                <p data-i18n="tools.ext_desc">Highlight any glossary term on any page, hover for instant context, look up via right-click.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="api">
+                                <div class="tool-icon">⚡</div>
+                                <h3 data-i18n="tools.api_title">FastAPI Backend</h3>
+                                <p data-i18n="tools.api_desc">REST endpoints for lookup, prefix &amp; semantic search, annotation, and the ethical-AI usage audit.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="mcp">
+                                <div class="tool-icon">🧠</div>
+                                <h3 data-i18n="tools.mcp_title">MCP Server</h3>
+                                <p data-i18n="tools.mcp_desc">Plug the glossary into Claude Desktop, Cursor, or VS Code as a tool-calling MCP server.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="cli">
+                                <div class="tool-icon">💻</div>
+                                <h3 data-i18n="tools.cli_title">CLI</h3>
+                                <p data-i18n="tools.cli_desc">Terminal-first lookups, semantic search, annotation, and audits straight from your shell.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="python">
+                                <div class="tool-icon">🐍</div>
+                                <h3 data-i18n="tools.py_title">Python SDK</h3>
+                                <p data-i18n="tools.py_desc">Zero-dependency drop-in client for the EthicalStack API.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="js">
+                                <div class="tool-icon">🟨</div>
+                                <h3 data-i18n="tools.js_title">JS / Node SDK</h3>
+                                <p data-i18n="tools.js_desc">Same API, idiomatic JavaScript. Browser- and Node-friendly.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                            <article class="tool" data-tool="evals">
+                                <div class="tool-icon">📊</div>
+                                <h3 data-i18n="tools.evals_title">Evaluation Suite</h3>
+                                <p data-i18n="tools.evals_desc">Reproducible benchmarks for term lookup, semantic recall, audit calibration, and multilingual coverage.</p>
+                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== History view ===== -->
+                <section class="view" id="view-history">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="history.title">Audit history</h2>
+                            <p data-i18n="history.subtitle">Locally stored on this device — your last 20 audits.</p>
+                        </div>
+                        <div id="historyFull" class="history-full"></div>
+                    </div>
+                </section>
+
+                <!-- ===== Contribute view ===== -->
+                <section class="view" id="view-contribute">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="contrib.title">Glossary Data &amp; Contributing</h2>
+                            <p data-i18n="contrib.subtitle">The dataset is open and reproducible. Bring corrections, aliases, or new terms.</p>
+                        </div>
+                        <div class="data-grid">
+                            <article>
+                                <h3 data-i18n="contrib.dataset">Dataset</h3>
+                                <ul>
+                                    <li><strong data-i18n="contrib.source">Source:</strong> ICAIRE multilingual Excel (EN / AR / FR)</li>
+                                    <li><strong data-i18n="contrib.pipeline">Pipeline:</strong> <code>scripts/ingest_glossary.py</code></li>
+                                    <li><strong data-i18n="contrib.outputs">Outputs:</strong> <code>data/glossary.json</code>, <code>glossary.csv</code></li>
+                                    <li><strong data-i18n="contrib.versioning">Versioning:</strong> <code>dataset_meta.json</code></li>
+                                </ul>
+                                <div class="tool-actions">
+                                    <a class="btn primary" href="/version" target="_blank" data-i18n="contrib.view_meta">View dataset_meta</a>
+                                    <a class="btn ghost" href="/terms?limit=5" target="_blank" data-i18n="contrib.sample_json">Sample JSON</a>
+                                </div>
+                            </article>
+                            <article>
+                                <h3 data-i18n="contrib.how">How to contribute</h3>
+                                <ol>
+                                    <li data-i18n="contrib.step1">Edit the dataset xlsx or add aliases to <code>data/aliases.json</code>.</li>
+                                    <li data-i18n="contrib.step2">Re-run <code>python scripts/ingest_glossary.py</code> to regenerate JSON / CSV.</li>
+                                    <li data-i18n="contrib.step3">Run the eval suite: <code>python evals/run_benchmark.py</code>.</li>
+                                    <li data-i18n="contrib.step4">Open a PR — the dataset hash updates automatically.</li>
+                                </ol>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== Term modal ===== -->
+    <div class="modal-backdrop" id="termModal" hidden>
+        <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button class="modal-close" id="modalClose" aria-label="Close">&times;</button>
+            <div id="modalBody"></div>
+        </div>
+    </div>
+
+    <script src="i18n.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>
