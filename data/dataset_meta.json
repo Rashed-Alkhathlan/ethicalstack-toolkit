@@ -1,0 +1,12 @@
+{
+  "dataset_hash": "e3f4497c1fa445e7670f8dad0d541319fe663ad208766c2f780aec83abcf2801",
+  "entry_count": 1242,
+  "aliases_with_entries": 221,
+  "generated_at": "2026-05-08T22:37:22.576987+00:00",
+  "source_xlsx": "C:\\Users\\x1Ras\\Desktop\\Coding\\VSC\\AI-Glossary-Challenge-by-ICAIRE\\AI Glossary - Dataset.xlsx",
+  "sheets": [
+    "English - Arabic",
+    "English - French"
+  ],
+  "aliases_source": "C:\\Users\\x1Ras\\Desktop\\Coding\\VSC\\AI-Glossary-Challenge-by-ICAIRE\\data\\aliases.json"
+}

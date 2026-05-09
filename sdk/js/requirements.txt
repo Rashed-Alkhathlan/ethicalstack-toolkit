@@ -1,0 +1,1 @@
+# No external dependencies. Uses Node 18+ built-in fetch.

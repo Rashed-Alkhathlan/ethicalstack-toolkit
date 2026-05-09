@@ -1,0 +1,11 @@
+{
+    "name": "ethicalstack-client",
+    "version": "0.1.0",
+    "description": "Lightweight JS client for the EthicalStack API",
+    "main": "ethicalstackClient.js",
+    "type": "commonjs",
+    "license": "MIT",
+    "engines": {
+        "node": ">=18"
+    }
+}
