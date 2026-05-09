@@ -11,7 +11,8 @@
       "Bash(curl -s http://localhost:8765/benchmark/models)",
       "Bash(curl -s -X POST -H \"Content-Type: application/json\" -d '{\"url\":\"https://example.com\"}' http://localhost:8765/audit/url)",
       "Bash(curl -s -X POST -F \"file=@/tmp/a.txt\" http://localhost:8765/audit/file)",
-      "Bash(curl -s -N \"http://localhost:8765/benchmark/stream?target_model=gemini/gemini-2.5-flash&judge_model=gemini/gemini-2.5-flash&samples=1\" --max-time 60)"
+      "Bash(curl -s -N \"http://localhost:8765/benchmark/stream?target_model=gemini/gemini-2.5-flash&judge_model=gemini/gemini-2.5-flash&samples=1\" --max-time 60)",
+      "Bash(python -X utf8 -c ' *)"
     ]
   }
 }

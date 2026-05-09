@@ -271,16 +271,41 @@ function esc(s) {
         .replace(/"/g, "&quot;");
 }
 
+// Common-word denylist: filters out polluted aliases like "or" / "the" that
+// leaked from the source dataset and would otherwise highlight everywhere.
+// Acts on the lowercased token; only matters for ASCII single-word candidates.
+const HIGHLIGHT_STOPWORDS = new Set([
+    "a", "an", "the", "and", "or", "but", "if", "of", "in", "on", "at", "to",
+    "for", "by", "with", "as", "is", "are", "was", "were", "be", "been", "being",
+    "it", "its", "this", "that", "these", "those", "we", "you", "he", "she",
+    "they", "them", "his", "her", "our", "your", "their", "i", "me", "my",
+    "do", "does", "did", "have", "has", "had", "can", "could", "will", "would",
+    "should", "may", "might", "must", "no", "not", "yes", "so", "than", "then",
+    "from", "into", "out", "up", "down", "over", "under", "about",
+]);
+const HIGHLIGHT_MIN_LENGTH = 3;
+
+function isHighlightableTerm(term) {
+    if (!term) return false;
+    const trimmed = String(term).trim();
+    if (trimmed.length < HIGHLIGHT_MIN_LENGTH) return false;
+    // Single ASCII word that's a stopword → drop it.
+    if (/^[A-Za-z]+$/.test(trimmed) && HIGHLIGHT_STOPWORDS.has(trimmed.toLowerCase())) {
+        return false;
+    }
+    return true;
+}
+
 // Build a case-insensitive regex that matches whole-word occurrences of any
 // glossary term (including aliases).  Sorted longest-first so a compound term
 // like "Differential Privacy" matches before "Privacy".
 function buildTermRegex(entries) {
     const allTerms = [];
     for (const e of entries) {
-        if (e.term) allTerms.push(e.term);
+        if (isHighlightableTerm(e.term)) allTerms.push(e.term);
         if (Array.isArray(e.aliases)) {
             for (const a of e.aliases) {
-                if (a) allTerms.push(a);
+                if (isHighlightableTerm(a)) allTerms.push(a);
             }
         }
     }
@@ -292,13 +317,16 @@ function buildTermRegex(entries) {
 }
 
 // Map lowercased term (and aliases) → entry data for O(1) lookup when hovering.
+// Mirrors buildTermRegex's filtering so hover state stays consistent.
 function buildTermMap(entries) {
     const map = new Map();
     for (const e of entries) {
-        if (e.term) map.set(e.term.toLowerCase(), e);
+        if (isHighlightableTerm(e.term)) map.set(e.term.toLowerCase(), e);
         if (Array.isArray(e.aliases)) {
             for (const a of e.aliases) {
-                if (a && !map.has(a.toLowerCase())) map.set(a.toLowerCase(), e);
+                if (isHighlightableTerm(a) && !map.has(a.toLowerCase())) {
+                    map.set(a.toLowerCase(), e);
+                }
             }
         }
     }
