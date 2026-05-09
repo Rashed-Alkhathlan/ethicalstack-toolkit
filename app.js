@@ -5,7 +5,7 @@ const API_BASE = (() => {
     const meta = document.querySelector('meta[name="api-base"]');
     if (meta) return meta.content;
     return window.location.origin.startsWith("file:")
-        ? "http://localhost:8000"
+        ? "https://hoarsely-penetralian-esperanza.ngrok-free.dev"
         : window.location.origin;
 })();
 
