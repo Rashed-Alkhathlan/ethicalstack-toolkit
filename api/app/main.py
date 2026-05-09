@@ -5,13 +5,16 @@ import time
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
-from fastapi import FastAPI, HTTPException, Query, Request
+from fastapi import FastAPI, File, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import JSONResponse, FileResponse, RedirectResponse
+from fastapi.responses import JSONResponse, FileResponse, RedirectResponse, StreamingResponse
 from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel
 
 from .annotate import annotate_text
 from .audit import audit_text
+from .benchmark import list_models, stream_benchmark
+from .extractors import extract_file, fetch_url
 from .models import (
     AnnotationResponse,
     AnnotateRequest,
@@ -250,6 +253,77 @@ def audit(payload: AuditRequest) -> AuditResponse:
     report = audit_text(payload.text, store.entries)
     record_metric("audit", (time.monotonic() - start) * 1000)
     return AuditResponse(**report)
+
+
+class AuditUrlRequest(BaseModel):
+    url: str
+
+
+@app.post("/audit/url", response_model=AuditResponse)
+def audit_url(payload: AuditUrlRequest) -> AuditResponse:
+    start = time.monotonic()
+    ensure_loaded()
+    if not payload.url.strip():
+        raise HTTPException(status_code=400, detail="URL is required")
+    try:
+        text, _ = fetch_url(payload.url.strip())
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=502, detail=f"Could not fetch URL: {exc}")
+    if not text.strip():
+        raise HTTPException(status_code=422, detail="Fetched URL contained no extractable text.")
+    report = audit_text(text, store.entries)
+    record_metric("audit_url", (time.monotonic() - start) * 1000)
+    return AuditResponse(**report)
+
+
+@app.post("/audit/file", response_model=AuditResponse)
+async def audit_file(file: UploadFile = File(...)) -> AuditResponse:
+    start = time.monotonic()
+    ensure_loaded()
+    raw = await file.read()
+    if not raw:
+        raise HTTPException(status_code=400, detail="File is empty")
+    try:
+        text = extract_file(file.filename or "", raw)
+    except ValueError as exc:
+        raise HTTPException(status_code=400, detail=str(exc))
+    except Exception as exc:
+        raise HTTPException(status_code=422, detail=f"Could not extract text: {exc}")
+    if not text.strip():
+        raise HTTPException(status_code=422, detail="No extractable text in file.")
+    report = audit_text(text, store.entries)
+    record_metric("audit_file", (time.monotonic() - start) * 1000)
+    return AuditResponse(**report)
+
+
+@app.get("/benchmark/models")
+def benchmark_models() -> dict:
+    return {"models": list_models()}
+
+
+@app.get("/benchmark/stream")
+async def benchmark_stream(
+    target_model: str = Query(..., description="LiteLLM model id taking the test"),
+    judge_model: Optional[str] = Query(None, description="Judge model id"),
+    fallback_judge: Optional[str] = Query(None, description="Fallback judge for rate limits"),
+    samples: int = Query(5, ge=1, le=200, description="Number of glossary terms to evaluate"),
+) -> StreamingResponse:
+    ensure_loaded()
+    return StreamingResponse(
+        stream_benchmark(
+            target_model=target_model,
+            judge_model=judge_model,
+            fallback_judge=fallback_judge,
+            samples=samples,
+        ),
+        media_type="text/event-stream",
+        headers={
+            "Cache-Control": "no-cache",
+            "X-Accel-Buffering": "no",
+        },
+    )
 
 
 @app.get("/autocomplete", response_model=AutocompleteResponse)

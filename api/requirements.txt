@@ -5,3 +5,7 @@ chromadb
 sentence-transformers
 numpy
 google-genai
+python-multipart
+pypdf
+litellm
+python-dotenv

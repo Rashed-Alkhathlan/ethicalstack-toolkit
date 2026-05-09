@@ -15,7 +15,7 @@ const HISTORY_MAX = 20;
 // ----- API helper -----
 async function api(path, opts = {}) {
     const res = await fetch(`${API_BASE}${path}`, {
-        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" },
+        headers: { "Content-Type": "application/json"},
         ...opts,
     });
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
@@ -23,7 +23,7 @@ async function api(path, opts = {}) {
 }
 
 // ----- Routing (sidebar views) -----
-const views = ["dashboard", "audit", "explorer", "tools", "history", "contribute"];
+const views = ["dashboard", "audit", "explorer", "tools", "history", "contribute", "evaluator", "extension"];
 
 function navigate(view) {
     if (!views.includes(view)) view = "dashboard";
@@ -31,6 +31,7 @@ function navigate(view) {
     document.querySelectorAll(".side-link").forEach((el) => el.classList.toggle("active", el.dataset.view === view));
     if (location.hash !== `#${view}`) history.replaceState(null, "", `#${view}`);
     if (view === "history") renderFullHistory();
+    if (view === "evaluator") ensureBenchModelsLoaded();
 }
 
 document.querySelectorAll(".side-link[data-view]").forEach((el) => {
@@ -166,15 +167,43 @@ function renderSuggestions(suggestions) {
 
 // ----- Audit -----
 const auditText = document.getElementById("auditText");
+const auditUrl = document.getElementById("auditUrl");
+const auditFileInput = document.getElementById("auditFile");
+const auditFileName = document.getElementById("auditFileName");
 const auditOutput = document.getElementById("auditOutput");
 const auditMeta = document.getElementById("auditMeta");
 const downloadBtn = document.getElementById("downloadAuditBtn");
 const copyMdBtn = document.getElementById("copyMarkdownBtn");
 let lastAuditReport = null;
+let currentAuditSource = "text";
+
+// Source tab switching.
+document.querySelectorAll(".audit-tab").forEach((tab) => {
+    tab.addEventListener("click", () => {
+        currentAuditSource = tab.dataset.source;
+        document.querySelectorAll(".audit-tab").forEach((t) => t.classList.toggle("active", t === tab));
+        document.querySelectorAll(".audit-source-pane").forEach((p) => {
+            p.hidden = p.dataset.pane !== currentAuditSource;
+        });
+    });
+});
+
+auditFileInput?.addEventListener("change", () => {
+    const f = auditFileInput.files?.[0];
+    if (f) {
+        auditFileName.textContent = `${f.name} · ${(f.size / 1024).toFixed(1)} KB`;
+        auditFileName.hidden = false;
+    } else {
+        auditFileName.hidden = true;
+    }
+});
 
 document.getElementById("runAuditBtn").addEventListener("click", runAudit);
 document.getElementById("clearAuditBtn").addEventListener("click", () => {
     auditText.value = "";
+    if (auditUrl) auditUrl.value = "";
+    if (auditFileInput) auditFileInput.value = "";
+    if (auditFileName) auditFileName.hidden = true;
     auditOutput.innerHTML = `<div class="empty">${escapeHtml(t("audit.empty"))}</div>`;
     auditMeta.hidden = true;
     downloadBtn.disabled = true;
@@ -182,6 +211,9 @@ document.getElementById("clearAuditBtn").addEventListener("click", () => {
     lastAuditReport = null;
 });
 document.getElementById("loadSampleBtn").addEventListener("click", () => {
+    currentAuditSource = "text";
+    document.querySelectorAll(".audit-tab").forEach((t) => t.classList.toggle("active", t.dataset.source === "text"));
+    document.querySelectorAll(".audit-source-pane").forEach((p) => { p.hidden = p.dataset.pane !== "text"; });
     auditText.value = SAMPLE_TEXT;
 });
 downloadBtn.addEventListener("click", () => {
@@ -214,16 +246,44 @@ document.addEventListener("keydown", (e) => {
 });
 
 async function runAudit() {
-    const text = auditText.value.trim();
-    if (!text) { toast(t("audit.paste_first")); return; }
-    auditOutput.innerHTML = `<div class="empty"><span class="spinner"></span>${escapeHtml(t("audit.running"))}</div>`;
+    let report;
+    let label = "";
+    let runningLabel = t("audit.running");
     try {
-        const report = await api("/audit", { method: "POST", body: JSON.stringify({ text }) });
+        if (currentAuditSource === "url") {
+            const url = (auditUrl?.value || "").trim();
+            if (!url) { toast(t("audit.url_required")); return; }
+            label = url;
+            runningLabel = t("audit.fetching");
+            auditOutput.innerHTML = `<div class="empty"><span class="spinner"></span>${escapeHtml(runningLabel)}</div>`;
+            report = await api("/audit/url", { method: "POST", body: JSON.stringify({ url }) });
+        } else if (currentAuditSource === "file") {
+            const f = auditFileInput?.files?.[0];
+            if (!f) { toast(t("audit.file_required")); return; }
+            label = f.name;
+            runningLabel = t("audit.fetching");
+            auditOutput.innerHTML = `<div class="empty"><span class="spinner"></span>${escapeHtml(runningLabel)}</div>`;
+            const form = new FormData();
+            form.append("file", f);
+            const res = await fetch(`${API_BASE}/audit/file`, { method: "POST", body: form });
+            if (!res.ok) {
+                let msg = `${res.status} ${res.statusText}`;
+                try { const j = await res.json(); msg = j?.error?.message || j?.detail || msg; } catch {}
+                throw new Error(msg);
+            }
+            report = await res.json();
+        } else {
+            const text = auditText.value.trim();
+            if (!text) { toast(t("audit.paste_first")); return; }
+            label = text;
+            auditOutput.innerHTML = `<div class="empty"><span class="spinner"></span>${escapeHtml(runningLabel)}</div>`;
+            report = await api("/audit", { method: "POST", body: JSON.stringify({ text }) });
+        }
         lastAuditReport = report;
         downloadBtn.disabled = false;
         copyMdBtn.disabled = false;
         renderAudit(report);
-        recordAudit(text, report);
+        recordAudit(label, report);
     } catch (err) {
         auditOutput.innerHTML = `<div class="empty">${escapeHtml(t("audit.failed"))} ${escapeHtml(err.message)}</div>`;
     }
@@ -573,46 +633,6 @@ bindCopyButtons();
 
 // ----- Tool detail modal -----
 const TOOL_DETAILS = {
-    extension: {
-        icon: "🌐",
-        title: { en: "Browser Extension", ar: "إضافة المتصفح" },
-        tag: { en: "Manifest v3 · Chrome / Edge", ar: "Manifest v3 · Chrome / Edge" },
-        body: { en: `
-            <h4>What it does</h4>
-            <p>Surfaces the ICAIRE ethical-AI glossary directly inside any web page. As you read, terms from the glossary are
-               quietly highlighted in-place — hover any highlight for the definition without leaving your tab.</p>
-            <h4>Highlights</h4>
-            <ul>
-                <li><strong>Auto-highlight on every page</strong> — terms from the glossary are detected on load.</li>
-                <li><strong>Hover tooltip</strong> — definition + Arabic / French translations appear inline.</li>
-                <li><strong>Right-click → Lookup</strong> on any selection.</li>
-                <li><strong>Configurable API base URL</strong> (defaults to <code>http://localhost:8000</code>).</li>
-                <li><strong>Themes &amp; language pairs</strong> in the options page (en-ar / ar-en / en-fr).</li>
-                <li>Cache stored in <code>chrome.storage.local</code>; one network roundtrip per day.</li>
-            </ul>
-            <h4>Install</h4>
-            <ul>
-                <li>Download the <code>.zip</code>, extract.</li>
-                <li><code>chrome://extensions</code> → enable <em>Developer mode</em> → <em>Load unpacked</em>.</li>
-                <li>Open the options page to point it at your API URL.</li>
-            </ul>`, ar: `
-            <h4>ما تفعله</h4>
-            <p>تُبرز الإضافة مصطلحات معجم ICAIRE الأخلاقي مباشرة داخل أي صفحة ويب. أثناء القراءة، تظهر المصطلحات
-               بإبراز خفيف؛ مرّر المؤشر فوق أي مصطلح لرؤية تعريفه دون مغادرة الصفحة.</p>
-            <h4>المزايا</h4>
-            <ul>
-                <li><strong>إبراز تلقائي في كل الصفحات</strong> عبر فحص النص عند التحميل.</li>
-                <li><strong>تلميح عند التحويم</strong> يعرض التعريف والترجمات إلى العربية والفرنسية.</li>
-                <li><strong>قائمة سياق</strong> للبحث عن أي نص محدد.</li>
-                <li><strong>عنوان واجهة قابل للتعديل</strong> (افتراضياً <code>http://localhost:8000</code>).</li>
-                <li><strong>سمات وأزواج لغوية</strong> قابلة للضبط من صفحة الخيارات.</li>
-                <li>التخزين المحلي في <code>chrome.storage.local</code>؛ طلب شبكة واحد يومياً.</li>
-            </ul>` },
-        actions: [
-            { kind: "primary", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/extension/download", label: { en: "Download .zip", ar: "تنزيل الإضافة" } },
-            { kind: "ghost", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/dashboard/HUB.md", label: { en: "Install guide", ar: "دليل التثبيت" } },
-        ],
-    },
     api: {
         icon: "⚡",
         title: { en: "FastAPI Backend", ar: "خدمة FastAPI" },
@@ -766,41 +786,40 @@ console.log(report.overall_severity);</code></pre>
             { kind: "primary", copy: "npm install ethicalstack-client", label: { en: "Copy install command", ar: "نسخ أمر التثبيت" } },
         ],
     },
-    evals: {
-        icon: "📊",
-        title: { en: "Evaluation Suite", ar: "مجموعة التقييمات" },
-        tag: { en: "Reproducible benchmarks · CI-ready", ar: "اختبارات قابلة للاستنساخ" },
+    vectordb: {
+        icon: "🧬",
+        title: { en: "Vector Database (Chroma)", ar: "قاعدة بيانات متجهية (Chroma)" },
+        tag: { en: "Chroma · MiniLM · cosine", ar: "Chroma · MiniLM · جيب التمام" },
         body: { en: `
-            <h4>What it measures</h4>
-            <p><strong>This framework tests how accurately AI models explain AI concepts in Arabic compared to a ground truth dataset. It uses an LLM-as-a-judge approach to automatically score the outputs.</p>
-            <h4>Run locally</h4>
-<pre><code>cd evals
-
-# Run a small test with 5 samples
-python run_benchmark.py --samples 5
-
-# Run with different models and save as JSON
-python run_benchmark.py --target-model groq/llama3-8b-8192 --judge-model gemini/gemini-3.1-flash-lite --samples 50 --output results/my_test.json
-
-# Run on the entire dataset (might take a long time and use many API calls!)
-python run_benchmark.py --samples 0</code></pre>
-            <p>Results land in <code>evals/results/&lt;timestamp&gt;.json</code> alongside a Markdown summary you can drop into a PR.</p>
-            <h4>CI hook</h4>
-            <p>The suite is wired to fail a build if regressions exceed configurable thresholds — drop it into GitHub
-               Actions to gate dataset and prompt changes.</p>`, ar: `
-            <h4>ما تقيسه</h4>
+            <h4>What it does</h4>
+            <p>Every glossary entry is embedded with <code>sentence-transformers/all-MiniLM-L6-v2</code> and persisted in a
+               local <a href="https://www.trychroma.com/" target="_blank" rel="noopener">Chroma</a> collection on disk. The API,
+               CLI, MCP server, and dashboard all share the same index for semantic lookup, retrieval-augmented audit, and
+               concept similarity.</p>
+            <h4>Highlights</h4>
             <ul>
-                <li>دقة البحث المطابق وبحث المرادفات.</li>
-                <li>الاسترجاع الدلالي recall@k.</li>
-                <li>معايرة التدقيق مقابل تصنيف بشري.</li>
-                <li>تغطية لغوية متعددة (إنجليزي · عربي · فرنسي).</li>
-                <li>زمن الاستجابة p50/p95.</li>
+                <li><strong>Persistent on disk</strong> at <code>data/chroma/</code> — built once, reused on every restart.</li>
+                <li><strong>Cosine similarity</strong> over normalized 384-dim embeddings.</li>
+                <li><strong>Idempotent ingestion</strong> — <code>ensure_index</code> is a no-op once populated.</li>
+                <li>Backs <code>/semantic-search</code>, the MCP <code>semantic_search</code> tool, and the explorer's “Semantic search” toggle.</li>
             </ul>
-            <h4>التشغيل محلياً</h4>
-<pre><code>cd evals
-python run_benchmark.py --suite all --output results/</code></pre>` },
+            <h4>Use it</h4>
+<pre><code>curl "http://localhost:8000/semantic-search?q=bias+in+training+data&amp;limit=5"
+
+python -c "from api.app.vector_index import GlossaryVectorIndex
+idx = GlossaryVectorIndex()
+print(idx.search('explainability of decisions', limit=3))"</code></pre>`, ar: `
+            <h4>ما تفعله</h4>
+            <p>تُضمَّن كل مصطلحات المعجم بنموذج <code>MiniLM-L6-v2</code> وتُحفظ في فهرس <a href="https://www.trychroma.com/" target="_blank" rel="noopener">Chroma</a>
+               محلي. تستخدمه الواجهة وسطر الأوامر وخادم MCP ولوحة التحكم للبحث الدلالي واسترجاع المفاهيم.</p>
+            <h4>المزايا</h4>
+            <ul>
+                <li>تخزين دائم في <code>data/chroma/</code>.</li>
+                <li>تشابه جيب التمام على متجهات بطول ٣٨٤.</li>
+                <li>إعداد لمرّة واحدة، إعادة الاستخدام تلقائية.</li>
+            </ul>` },
         actions: [
-            { kind: "primary", copy: "cd evals && python run_benchmark.py --suite all", label: { en: "Copy run command", ar: "نسخ الأمر" } },
+            { kind: "primary", copy: "curl 'http://localhost:8000/semantic-search?q=bias+in+training+data&limit=5'", label: { en: "Copy curl", ar: "نسخ الأمر" } },
         ],
     },
 };
@@ -840,6 +859,215 @@ function openToolModal(toolKey) {
 document.querySelectorAll(".tool[data-tool]").forEach((el) => {
     el.addEventListener("click", () => openToolModal(el.dataset.tool));
 });
+
+// ----- Live evaluator / benchmark -----
+const benchTarget = document.getElementById("benchTarget");
+const benchJudge = document.getElementById("benchJudge");
+const benchSamples = document.getElementById("benchSamples");
+const benchRunBtn = document.getElementById("benchRunBtn");
+const benchStopBtn = document.getElementById("benchStopBtn");
+const benchStatus = document.getElementById("benchStatus");
+const benchProgressWrap = document.getElementById("benchProgressWrap");
+const benchProgressFill = document.getElementById("benchProgressFill");
+const benchProgressMeta = document.getElementById("benchProgressMeta");
+const benchSummary = document.getElementById("benchSummary");
+const benchTableWrap = document.getElementById("benchTableWrap");
+const benchTableBody = document.getElementById("benchTableBody");
+
+let benchModelsLoaded = false;
+let benchAbortController = null;
+
+async function ensureBenchModelsLoaded() {
+    if (benchModelsLoaded || !benchTarget) return;
+    try {
+        const data = await api("/benchmark/models");
+        const models = data.models || [];
+        benchTarget.innerHTML = "";
+        benchJudge.innerHTML = "";
+        models.forEach((m) => {
+            const labelSuffix = m.available ? "" : ` ${t("evaluator.unavailable")}`;
+            const option = (sel) => {
+                const o = document.createElement("option");
+                o.value = m.id;
+                o.textContent = `${m.label}${labelSuffix}`;
+                if (!m.available) o.classList.add("bench-option-unavailable");
+                if (m.default && sel === benchTarget) o.selected = true;
+                if (m.id === "gemini/gemini-2.5-flash" && sel === benchJudge) o.selected = true;
+                return o;
+            };
+            benchTarget.appendChild(option(benchTarget));
+            benchJudge.appendChild(option(benchJudge));
+        });
+        benchModelsLoaded = true;
+    } catch (err) {
+        benchStatus.hidden = false;
+        benchStatus.className = "bench-status bench-status-error";
+        benchStatus.textContent = `${t("evaluator.no_models")} ${err.message}`;
+    }
+}
+
+benchRunBtn?.addEventListener("click", runBenchmark);
+benchStopBtn?.addEventListener("click", stopBenchmark);
+
+function stopBenchmark() {
+    if (benchAbortController) {
+        benchAbortController.abort();
+        benchAbortController = null;
+    }
+    benchRunBtn.disabled = false;
+    benchStopBtn.disabled = true;
+    benchStatus.hidden = false;
+    benchStatus.className = "bench-status bench-status-warn";
+    benchStatus.textContent = t("evaluator.stopped");
+}
+
+async function runBenchmark() {
+    if (!benchTarget?.value) return;
+    benchTableBody.innerHTML = "";
+    benchSummary.hidden = true;
+    benchSummary.innerHTML = "";
+    benchTableWrap.hidden = false;
+    benchProgressWrap.hidden = false;
+    benchProgressFill.style.width = "0%";
+    benchProgressMeta.textContent = "";
+    benchStatus.hidden = false;
+    benchStatus.className = "bench-status";
+    benchStatus.textContent = t("evaluator.starting");
+    benchRunBtn.disabled = true;
+    benchStopBtn.disabled = false;
+
+    const params = new URLSearchParams({
+        target_model: benchTarget.value,
+        judge_model: benchJudge.value,
+        samples: String(Math.max(1, parseInt(benchSamples.value, 10) || 5)),
+    });
+
+    benchAbortController = new AbortController();
+    try {
+        const res = await fetch(`${API_BASE}/benchmark/stream?${params}`, {
+            signal: benchAbortController.signal,
+            headers: { Accept: "text/event-stream" },
+        });
+        if (!res.ok) {
+            let msg = `${res.status} ${res.statusText}`;
+            try { const j = await res.json(); msg = j?.error?.message || j?.detail || msg; } catch {}
+            throw new Error(msg);
+        }
+        await consumeSse(res, handleBenchEvent);
+    } catch (err) {
+        if (err.name !== "AbortError") {
+            benchStatus.className = "bench-status bench-status-error";
+            benchStatus.textContent = `${t("evaluator.failed")} ${err.message}`;
+        }
+    } finally {
+        benchAbortController = null;
+        benchRunBtn.disabled = false;
+        benchStopBtn.disabled = true;
+    }
+}
+
+async function consumeSse(response, onEvent) {
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+    let buffer = "";
+    while (true) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        buffer += decoder.decode(value, { stream: true });
+        let idx;
+        while ((idx = buffer.indexOf("\n\n")) >= 0) {
+            const chunk = buffer.slice(0, idx);
+            buffer = buffer.slice(idx + 2);
+            const dataLines = chunk
+                .split("\n")
+                .filter((l) => l.startsWith("data:"))
+                .map((l) => l.slice(5).trim());
+            if (!dataLines.length) continue;
+            try {
+                const payload = JSON.parse(dataLines.join("\n"));
+                onEvent(payload);
+            } catch {
+                // skip malformed
+            }
+        }
+    }
+}
+
+function handleBenchEvent(ev) {
+    switch (ev.type) {
+        case "started":
+            benchStatus.className = "bench-status";
+            benchStatus.textContent = `${t("evaluator.running_term")} 0 / ${ev.total}`;
+            benchProgressMeta.textContent = `0 / ${ev.total}`;
+            return;
+        case "item_start":
+            benchStatus.textContent = `${t("evaluator.running_term")} ${ev.term}`;
+            return;
+        case "item_done": {
+            const sevClass = ev.score >= 4 ? "ok" : ev.score >= 3 ? "warn" : ev.score > 0 ? "gap" : "muted";
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${ev.index + 1}</td>
+                <td class="bench-term">${escapeHtml(ev.term)}</td>
+                <td class="bench-cell-rtl">${escapeHtml(ev.explanation || "—")}</td>
+                <td class="bench-cell-rtl">${escapeHtml(ev.ground_truth || "—")}</td>
+                <td><span class="bench-score-pill bench-score-${sevClass}">${ev.score > 0 ? ev.score : "—"}</span></td>
+            `;
+            benchTableBody.prepend(row);
+            const pct = ((ev.index + 1) / ev.total) * 100;
+            benchProgressFill.style.width = `${pct}%`;
+            benchProgressMeta.textContent = `${ev.index + 1} / ${ev.total}`;
+            return;
+        }
+        case "item_error": {
+            const row = document.createElement("tr");
+            row.innerHTML = `
+                <td>${ev.index + 1}</td>
+                <td class="bench-term">${escapeHtml(ev.term)}</td>
+                <td colspan="2" class="bench-cell-error">${escapeHtml(ev.message || "error")}</td>
+                <td><span class="bench-score-pill bench-score-muted">—</span></td>
+            `;
+            benchTableBody.prepend(row);
+            return;
+        }
+        case "done": {
+            benchStatus.className = "bench-status bench-status-ok";
+            benchStatus.textContent = t("evaluator.done");
+            benchProgressFill.style.width = "100%";
+            renderBenchSummary(ev);
+            return;
+        }
+        case "error":
+            benchStatus.className = "bench-status bench-status-error";
+            benchStatus.textContent = `${t("evaluator.failed")} ${ev.message}`;
+            return;
+    }
+}
+
+function renderBenchSummary(ev) {
+    benchSummary.hidden = false;
+    const histRows = Object.entries(ev.histogram || {})
+        .sort((a, b) => Number(b[0]) - Number(a[0]))
+        .map(([score, count]) => {
+            const pct = ev.scored ? (count / ev.scored) * 100 : 0;
+            return `
+                <div class="bench-hist-row">
+                    <span class="bench-hist-label">${score}</span>
+                    <div class="bench-hist-bar"><div class="bench-hist-fill bench-score-${score >= 4 ? "ok" : score >= 3 ? "warn" : "gap"}" style="width:${pct}%"></div></div>
+                    <span class="bench-hist-count">${count}</span>
+                </div>`;
+        }).join("");
+    benchSummary.innerHTML = `
+        <div class="bench-summary-stats">
+            <div><span class="bench-stat-label">${escapeHtml(t("evaluator.avg"))}</span><span class="bench-stat-val">${(ev.average_score || 0).toFixed(2)} / 5</span></div>
+            <div><span class="bench-stat-label">${escapeHtml(t("evaluator.scored"))}</span><span class="bench-stat-val">${ev.scored} / ${ev.total}</span></div>
+            <div><span class="bench-stat-label">${escapeHtml(t("evaluator.duration"))}</span><span class="bench-stat-val">${ev.duration_seconds}s</span></div>
+        </div>
+        <div class="bench-hist">
+            <div class="bench-hist-title">${escapeHtml(t("evaluator.histogram"))}</div>
+            ${histRows}
+        </div>`;
+}
 
 // ----- Utilities -----
 function escapeHtml(s) {

@@ -23,10 +23,6 @@
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12l9-9 9 9"/><path d="M5 10v10h14V10"/></svg>
                     <span data-i18n="nav.dashboard">Dashboard</span>
                 </a>
-                <a class="side-link" data-view="audit" href="#audit">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
-                    <span data-i18n="nav.audit">Ethical Auditor</span>
-                </a>
                 <a class="side-link" data-view="explorer" href="#explorer">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h10"/></svg>
                     <span data-i18n="nav.glossary">Glossary</span>
@@ -42,6 +38,21 @@
                 <a class="side-link" data-view="contribute" href="#contribute">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg>
                     <span data-i18n="nav.contribute">Contribute</span>
+                </a>
+
+                <div class="side-divider"><span data-i18n="nav.projects">Projects &amp; Demos</span></div>
+
+                <a class="side-link" data-view="audit" href="#audit">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                    <span data-i18n="nav.audit">Ethical Auditor</span>
+                </a>
+                <a class="side-link" data-view="evaluator" href="#evaluator">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="M7 14l4-4 4 4 5-5"/></svg>
+                    <span data-i18n="nav.evaluator">Evaluator</span>
+                </a>
+                <a class="side-link" data-view="extension" href="#extension">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h6v6H4zM14 4h6v6h-6zM14 14h6v6h-6zM4 14h6v6H4z"/></svg>
+                    <span data-i18n="nav.extension">Browser Extension</span>
                 </a>
             </nav>
             <div class="sidebar-foot">
@@ -183,12 +194,44 @@
                         </div>
                         <div class="audit-grid">
                             <div class="audit-input">
-                                <textarea
-                                    id="auditText"
-                                    rows="14"
-                                    data-i18n-placeholder="audit.input_placeholder"
-                                    placeholder="Paste research paper, abstract, technical doc, or model card here…"
-                                ></textarea>
+                                <div class="audit-tabs" role="tablist">
+                                    <button class="audit-tab active" data-source="text" type="button" data-i18n="audit.tab_text">Text</button>
+                                    <button class="audit-tab" data-source="url" type="button" data-i18n="audit.tab_url">URL</button>
+                                    <button class="audit-tab" data-source="file" type="button" data-i18n="audit.tab_file">File</button>
+                                </div>
+
+                                <div class="audit-source-pane" data-pane="text">
+                                    <textarea
+                                        id="auditText"
+                                        rows="14"
+                                        data-i18n-placeholder="audit.input_placeholder"
+                                        placeholder="Paste research paper, abstract, technical doc, or model card here…"
+                                    ></textarea>
+                                </div>
+
+                                <div class="audit-source-pane" data-pane="url" hidden>
+                                    <input
+                                        id="auditUrl"
+                                        type="url"
+                                        class="audit-url-input"
+                                        data-i18n-placeholder="audit.url_placeholder"
+                                        placeholder="https://example.com/paper.html"
+                                    />
+                                    <p class="audit-source-hint" data-i18n="audit.url_hint">
+                                        Fetches the page (HTML / PDF / plain text), extracts the body, and audits it.
+                                    </p>
+                                </div>
+
+                                <div class="audit-source-pane" data-pane="file" hidden>
+                                    <label class="audit-file-drop" id="auditFileDrop">
+                                        <input type="file" id="auditFile" accept=".txt,.md,.html,.htm,.json,.pdf,text/*,application/pdf" hidden />
+                                        <div class="audit-file-icon">📄</div>
+                                        <div class="audit-file-label" data-i18n="audit.file_label">Click to choose a file</div>
+                                        <div class="audit-file-hint" data-i18n="audit.file_hint">.txt · .md · .html · .json · .pdf — up to 4 MB</div>
+                                        <div class="audit-file-name" id="auditFileName" hidden></div>
+                                    </label>
+                                </div>
+
                                 <div class="audit-actions">
                                     <button id="runAuditBtn" class="btn primary" data-i18n="audit.run">Run Audit</button>
                                     <button id="loadSampleBtn" class="btn ghost" data-i18n="audit.sample">Load sample</button>
@@ -248,12 +291,6 @@
                             <p data-i18n="tools.subtitle">Same backend, multiple surfaces. Pick the one that fits your workflow.</p>
                         </div>
                         <div class="tool-grid" id="toolGrid">
-                            <article class="tool" data-tool="extension">
-                                <div class="tool-icon">🌐</div>
-                                <h3 data-i18n="tools.ext_title">Browser Extension</h3>
-                                <p data-i18n="tools.ext_desc">Highlight any glossary term on any page, hover for instant context, look up via right-click.</p>
-                                <span class="tool-more" data-i18n="tools.more">Read more →</span>
-                            </article>
                             <article class="tool" data-tool="api">
                                 <div class="tool-icon">⚡</div>
                                 <h3 data-i18n="tools.api_title">FastAPI Backend</h3>
@@ -284,11 +321,109 @@
                                 <p data-i18n="tools.js_desc">Same API, idiomatic JavaScript. Browser- and Node-friendly.</p>
                                 <span class="tool-more" data-i18n="tools.more">Read more →</span>
                             </article>
-                            <article class="tool" data-tool="evals">
-                                <div class="tool-icon">📊</div>
-                                <h3 data-i18n="tools.evals_title">Evaluation Benchmark</h3>
-                                <p data-i18n="tools.evals_desc">Reproducible benchmarks for term lookup, semantic recall, audit calibration, and multilingual coverage.</p>
+                            <article class="tool" data-tool="vectordb">
+                                <div class="tool-icon">🧬</div>
+                                <h3 data-i18n="tools.vector_title">Vector Database</h3>
+                                <p data-i18n="tools.vector_desc">Persistent Chroma index of every glossary entry, embedded with MiniLM for semantic search and concept retrieval.</p>
                                 <span class="tool-more" data-i18n="tools.more">Read more →</span>
+                            </article>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Evaluator view ===== -->
+                <section class="view" id="view-evaluator">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="evaluator.title">Live Model Evaluation Benchmark</h2>
+                            <p data-i18n="evaluator.subtitle">
+                                Pick a target model, run the ICAIRE Arabic-glossary benchmark live against it, and watch each
+                                term-by-term score land in real time. The judge model grades each Arabic explanation 1–5
+                                against the ground-truth definition.
+                            </p>
+                        </div>
+
+                        <div class="bench-controls">
+                            <label class="bench-field">
+                                <span data-i18n="evaluator.target_label">Target model</span>
+                                <select id="benchTarget"></select>
+                            </label>
+                            <label class="bench-field">
+                                <span data-i18n="evaluator.judge_label">Judge model</span>
+                                <select id="benchJudge"></select>
+                            </label>
+                            <label class="bench-field bench-field-narrow">
+                                <span data-i18n="evaluator.samples_label">Samples</span>
+                                <input id="benchSamples" type="number" min="1" max="200" value="5" />
+                            </label>
+                            <div class="bench-buttons">
+                                <button id="benchRunBtn" class="btn primary" data-i18n="evaluator.run">Run benchmark</button>
+                                <button id="benchStopBtn" class="btn ghost" disabled data-i18n="evaluator.stop">Stop</button>
+                            </div>
+                        </div>
+
+                        <div class="bench-status" id="benchStatus" hidden></div>
+
+                        <div class="bench-progress-wrap" id="benchProgressWrap" hidden>
+                            <div class="bench-progress"><div class="bench-progress-fill" id="benchProgressFill"></div></div>
+                            <div class="bench-progress-meta" id="benchProgressMeta"></div>
+                        </div>
+
+                        <div class="bench-summary" id="benchSummary" hidden></div>
+
+                        <div class="bench-table-wrap" id="benchTableWrap" hidden>
+                            <table class="bench-table" id="benchTable">
+                                <thead>
+                                    <tr>
+                                        <th data-i18n="evaluator.col_index">#</th>
+                                        <th data-i18n="evaluator.col_term">Term</th>
+                                        <th data-i18n="evaluator.col_explanation">Generated explanation</th>
+                                        <th data-i18n="evaluator.col_truth">Ground truth</th>
+                                        <th data-i18n="evaluator.col_score">Score</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="benchTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- ===== Extension view ===== -->
+                <section class="view" id="view-extension">
+                    <div class="card">
+                        <div class="card-head">
+                            <h2 data-i18n="extview.title">Browser Extension</h2>
+                            <p data-i18n="extview.subtitle">
+                                Surfaces the ICAIRE glossary directly inside any web page — auto-highlight, hover tooltip,
+                                and right-click lookup. Manifest V3 for Chrome &amp; Edge.
+                            </p>
+                        </div>
+
+                        <div class="ext-grid">
+                            <article class="ext-card">
+                                <div class="ext-icon">🌐</div>
+                                <h3 data-i18n="extview.what_title">What it does</h3>
+                                <ul>
+                                    <li data-i18n="extview.what_1_html"><strong>Auto-highlight</strong> on every page — terms from the glossary are detected on load.</li>
+                                    <li data-i18n="extview.what_2_html"><strong>Hover tooltip</strong> — definition + Arabic / French translations appear inline.</li>
+                                    <li data-i18n="extview.what_3_html"><strong>Right-click → Lookup</strong> on any selection.</li>
+                                    <li data-i18n="extview.what_4_html"><strong>Configurable API base URL</strong> (defaults to <code>http://localhost:8000</code>).</li>
+                                    <li data-i18n="extview.what_5_html"><strong>Themes &amp; language pairs</strong> (en-ar / ar-en / en-fr).</li>
+                                    <li data-i18n="extview.what_6_html">Caches results in <code>chrome.storage.local</code> — one network roundtrip per day.</li>
+                                </ul>
+                            </article>
+                            <article class="ext-card">
+                                <div class="ext-icon">📦</div>
+                                <h3 data-i18n="extview.install_title">Install</h3>
+                                <ol>
+                                    <li data-i18n="extview.install_1_html">Download the <code>.zip</code> and extract it.</li>
+                                    <li data-i18n="extview.install_2_html">Open <code>chrome://extensions</code> → enable <em>Developer mode</em> → click <em>Load unpacked</em>.</li>
+                                    <li data-i18n="extview.install_3_html">Pick the unpacked folder, then open the options page to set your API URL.</li>
+                                </ol>
+                                <div class="ext-actions">
+                                    <a class="btn primary" href="https://hoarsely-penetralian-esperanza.ngrok-free.dev/extension/download" data-i18n="extview.download">Download .zip</a>
+                                    <a class="btn ghost" href="https://hoarsely-penetralian-esperanza.ngrok-free.dev/dashboard/HUB.md" target="_blank" data-i18n="extview.guide">Install guide</a>
+                                </div>
                             </article>
                         </div>
                     </div>
@@ -322,8 +457,8 @@
                                     <li><strong data-i18n="contrib.versioning">Versioning:</strong> <code>dataset_meta.json</code></li>
                                 </ul>
                                 <div class="tool-actions">
-                                    <a class="btn primary" href="/version" target="_blank" data-i18n="contrib.view_meta">View dataset_meta</a>
-                                    <a class="btn ghost" href="/terms?limit=5" target="_blank" data-i18n="contrib.sample_json">Sample JSON</a>
+                                    <a class="btn primary" href="https://hoarsely-penetralian-esperanza.ngrok-free.dev/version" target="_blank" data-i18n="contrib.view_meta">View dataset_meta</a>
+                                    <a class="btn ghost" href="https://hoarsely-penetralian-esperanza.ngrok-free.dev/terms?limit=5" target="_blank" data-i18n="contrib.sample_json">Sample JSON</a>
                                 </div>
                             </article>
                             <article>
