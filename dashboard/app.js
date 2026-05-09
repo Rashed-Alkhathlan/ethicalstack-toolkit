@@ -15,7 +15,7 @@ const HISTORY_MAX = 20;
 // ----- API helper -----
 async function api(path, opts = {}) {
     const res = await fetch(`${API_BASE}${path}`, {
-        headers: { "Content-Type": "application/json", "ngrok-skip-browser-warning": "1" },
+        headers: { "Content-Type": "application/json"},
         ...opts,
     });
     if (!res.ok) throw new Error(`${res.status} ${res.statusText}`);
