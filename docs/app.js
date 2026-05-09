@@ -668,8 +668,8 @@ uvicorn app.main:app --reload --port 8000
                 <li><code>POST /audit</code> — تدقيق كامل للاستخدام الأخلاقي.</li>
             </ul>` },
         actions: [
-            { kind: "primary", href: "/docs", target: "_blank", label: { en: "Open API docs", ar: "وثائق الواجهة" } },
-            { kind: "ghost", href: "/health", target: "_blank", label: { en: "Health", ar: "حالة الخدمة" } },
+            { kind: "primary", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/docs", target: "_blank", label: { en: "Open API docs", ar: "وثائق الواجهة" } },
+            { kind: "ghost", href: "https://hoarsely-penetralian-esperanza.ngrok-free.dev/health", target: "_blank", label: { en: "Health", ar: "حالة الخدمة" } },
         ],
     },
     mcp: {
