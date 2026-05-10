@@ -478,6 +478,68 @@ button:disabled:hover { transform: none; box-shadow: none; }
 }
 @media (max-width: 1100px) { .dashboard-grid { grid-template-columns: 1fr; } }
 
+/* ===== Surface grid (dashboard) ===== */
+.surface-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+}
+.surface-card {
+    padding: 16px;
+    background: var(--panel-2);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all 0.18s;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+.surface-card:hover {
+    border-color: var(--mint);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-card);
+}
+.surface-icon {
+    width: 36px; height: 36px;
+    border-radius: 10px;
+    display: grid; place-items: center;
+    font-size: 18px;
+    background: var(--mint-soft);
+    margin-bottom: 6px;
+}
+.surface-card h4 { margin: 0; font-size: 14px; font-weight: 600; }
+.surface-card p { margin: 0; font-size: 12px; color: var(--text-muted); line-height: 1.5; }
+
+/* ===== Quickstart list ===== */
+.quickstart-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 14px; }
+.quickstart-list li { display: flex; align-items: flex-start; gap: 12px; }
+.quickstart-list li > div { flex: 1; min-width: 0; }
+.quickstart-num {
+    width: 28px; height: 28px;
+    border-radius: 8px;
+    background: var(--mint-soft);
+    color: var(--mint);
+    display: grid; place-items: center;
+    font-size: 13px; font-weight: 700;
+    flex-shrink: 0;
+}
+.quickstart-step { font-size: 13px; font-weight: 600; margin-bottom: 6px; }
+.quickstart-list pre {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    padding: 10px 12px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-family: "JetBrains Mono", ui-monospace, monospace;
+    overflow-x: auto;
+    margin: 0;
+    line-height: 1.5;
+    direction: ltr;
+    color: var(--text);
+    white-space: pre;
+}
+
 .dim-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 4px; }
 .dim-list li {
     display: flex; align-items: center; gap: 12px;

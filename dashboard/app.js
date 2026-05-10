@@ -43,6 +43,12 @@ document.querySelectorAll(".side-link[data-view]").forEach((el) => {
 document.querySelectorAll("[data-jump]").forEach((el) => {
     el.addEventListener("click", () => navigate(el.dataset.jump));
 });
+document.querySelectorAll("[data-tool-jump]").forEach((el) => {
+    el.addEventListener("click", () => {
+        navigate("tools");
+        openToolModal(el.dataset.toolJump);
+    });
+});
 window.addEventListener("hashchange", () => navigate(location.hash.slice(1)));
 
 // ----- Language toggle -----

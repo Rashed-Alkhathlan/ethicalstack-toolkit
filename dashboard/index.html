@@ -104,18 +104,20 @@
                     <div class="hero-card">
                         <div class="hero-eyebrow">
                             <span class="dot"></span>
-                            <span data-i18n="hero.eyebrow">Powered by Gemini 3.1 Flash Lite Preview</span>
+                            <span data-i18n="hero.eyebrow">A multilingual toolkit for responsible AI</span>
                         </div>
                         <h1 data-i18n="hero.title">
-                            Audit whether AI is being used <span class="grad">ethically and responsibly</span>, in your real-world context.
+                            One <span class="grad">ethical-AI toolkit</span>, many surfaces — glossary, audits, evals, and SDKs.
                         </h1>
                         <p data-i18n="hero.subtitle">
-                            Score papers, model cards, specs, syllabi, and proposals against ten ethical-AI usage dimensions —
-                            anchored in the ICAIRE multilingual glossary, with text-grounded evidence and concrete recommendations.
+                            EthicalStack ships an ICAIRE-grounded multilingual glossary alongside an HTTP API, CLI, MCP server,
+                            Python &amp; JS SDKs, a browser extension, a live model evaluator, and an ethical-AI usage auditor —
+                            all backed by the same Chroma-indexed dataset.
                         </p>
                         <div class="hero-cta">
-                            <button class="btn primary" data-jump="audit" data-i18n="hero.cta_primary">Run an audit</button>
+                            <button class="btn primary" data-jump="tools" data-i18n="hero.cta_primary">Explore the toolkit</button>
                             <button class="btn ghost" data-jump="explorer" data-i18n="hero.cta_secondary">Browse glossary</button>
+                            <button class="btn ghost" data-jump="audit" data-i18n="hero.cta_audit">Run an audit</button>
                         </div>
                     </div>
 
@@ -130,19 +132,19 @@
                         </div>
                         <div class="stat">
                             <div class="stat-icon stat-icon-mint">
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-4"/><circle cx="12" cy="12" r="9"/></svg>
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h4l3-9 4 18 3-9h4"/></svg>
                             </div>
-                            <div class="stat-value">10</div>
-                            <div class="stat-label" data-i18n="stats.dimensions">Ethical dimensions</div>
-                            <div class="stat-meta" data-i18n="stats.dimensions_meta">Responsible-AI usage focus</div>
+                            <div class="stat-value">3</div>
+                            <div class="stat-label" data-i18n="stats.languages">Languages</div>
+                            <div class="stat-meta" data-i18n="stats.languages_meta">English · Arabic · French</div>
                         </div>
                         <div class="stat">
                             <div class="stat-icon stat-icon-purple">
                                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3h7v7H3zM14 3h7v7h-7zM14 14h7v7h-7zM3 14h7v7H3z"/></svg>
                             </div>
-                            <div class="stat-value">5+</div>
-                            <div class="stat-label" data-i18n="stats.tools">Tools &amp; SDKs</div>
-                            <div class="stat-meta" data-i18n="stats.tools_meta">API · CLI · MCP · Ext</div>
+                            <div class="stat-value">8</div>
+                            <div class="stat-label" data-i18n="stats.surfaces">Surfaces shipped</div>
+                            <div class="stat-meta" data-i18n="stats.surfaces_meta">API · CLI · MCP · SDKs · Ext · Auditor · Evaluator</div>
                         </div>
                         <div class="stat">
                             <div class="stat-icon stat-icon-amber">
@@ -154,13 +156,85 @@
                         </div>
                     </div>
 
+                    <div class="card">
+                        <div class="card-head-row">
+                            <h3 data-i18n="dash.surfaces_title">What's in the toolkit</h3>
+                            <span class="muted" data-i18n="dash.surfaces_sub">Click any surface to jump in</span>
+                        </div>
+                        <div class="surface-grid">
+                            <div class="surface-card" data-jump="explorer">
+                                <div class="surface-icon">📚</div>
+                                <h4 data-i18n="dash.surface_glossary">Multilingual glossary</h4>
+                                <p data-i18n="dash.surface_glossary_desc">1,200+ AI &amp; data terms with EN / AR / FR definitions, aliases, and source attribution.</p>
+                            </div>
+                            <div class="surface-card" data-jump="audit">
+                                <div class="surface-icon">🛡️</div>
+                                <h4 data-i18n="dash.surface_audit">Ethical AI auditor</h4>
+                                <p data-i18n="dash.surface_audit_desc">Score text, URLs, or files (PDF/HTML/MD) against ten responsible-AI dimensions.</p>
+                            </div>
+                            <div class="surface-card" data-jump="evaluator">
+                                <div class="surface-icon">📊</div>
+                                <h4 data-i18n="dash.surface_evaluator">Live model evaluator</h4>
+                                <p data-i18n="dash.surface_evaluator_desc">Pick a model and benchmark it term-by-term against the Arabic glossary, judged 1–5.</p>
+                            </div>
+                            <div class="surface-card" data-jump="extension">
+                                <div class="surface-icon">🌐</div>
+                                <h4 data-i18n="dash.surface_extension">Browser extension</h4>
+                                <p data-i18n="dash.surface_extension_desc">Auto-highlight glossary terms on every page with hover translations.</p>
+                            </div>
+                            <div class="surface-card" data-tool-jump="api">
+                                <div class="surface-icon">⚡</div>
+                                <h4 data-i18n="dash.surface_api">FastAPI backend</h4>
+                                <p data-i18n="dash.surface_api_desc">REST endpoints for lookup, prefix &amp; semantic search, annotation, and audit.</p>
+                            </div>
+                            <div class="surface-card" data-tool-jump="mcp">
+                                <div class="surface-icon">🧠</div>
+                                <h4 data-i18n="dash.surface_mcp">MCP server</h4>
+                                <p data-i18n="dash.surface_mcp_desc">Plug the glossary and auditor into Claude Desktop, Cursor, or VS Code.</p>
+                            </div>
+                            <div class="surface-card" data-tool-jump="cli">
+                                <div class="surface-icon">💻</div>
+                                <h4 data-i18n="dash.surface_cli">CLI &amp; SDKs</h4>
+                                <p data-i18n="dash.surface_cli_desc">Terminal-first lookups plus zero-dep Python and TypeScript clients.</p>
+                            </div>
+                            <div class="surface-card" data-tool-jump="vectordb">
+                                <div class="surface-icon">🧬</div>
+                                <h4 data-i18n="dash.surface_vector">Vector database</h4>
+                                <p data-i18n="dash.surface_vector_desc">Persistent Chroma index with MiniLM embeddings powering every semantic lookup.</p>
+                            </div>
+                        </div>
+                    </div>
+
                     <div class="dashboard-grid">
                         <div class="card">
                             <div class="card-head-row">
-                                <h3 data-i18n="dash.dimensions_title">Audit dimensions</h3>
-                                <span class="muted" data-i18n="dash.dimensions_sub">What we score</span>
+                                <h3 data-i18n="dash.quickstart_title">Quick start</h3>
+                                <span class="muted" data-i18n="dash.quickstart_sub">Two-minute setup</span>
                             </div>
-                            <ul class="dim-list" id="dimList"></ul>
+                            <ol class="quickstart-list">
+                                <li>
+                                    <span class="quickstart-num">1</span>
+                                    <div>
+                                        <div class="quickstart-step" data-i18n="dash.qs_1">Spin up the API (After Cloning Repo)</div>
+                                        <pre><code>cd api &amp;&amp; uvicorn app.main:app --reload --port 8000</code></pre>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="quickstart-num">2</span>
+                                    <div>
+                                        <div class="quickstart-step" data-i18n="dash.qs_2">Hit any surface</div>
+                                        <pre><code>curl http://localhost:8000/terms/Bias
+python cli/ethicalstack_cli.py audit paper.txt</code></pre>
+                                    </div>
+                                </li>
+                                <li>
+                                    <span class="quickstart-num">3</span>
+                                    <div>
+                                        <div class="quickstart-step" data-i18n="dash.qs_3">Open this dashboard</div>
+                                        <pre><code>open http://localhost:8000/dashboard/</code></pre>
+                                    </div>
+                                </li>
+                            </ol>
                         </div>
                         <div class="card">
                             <div class="card-head-row">
