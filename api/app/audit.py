@@ -134,7 +134,7 @@ AUDIT_DIMENSIONS: Dict[str, Dict[str, Any]] = {
 
 load_dotenv()
 
-GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite-preview")
+GEMINI_MODEL = os.environ.get("GEMINI_MODEL", "gemini-3.1-flash-lite")
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
 GEMINI_TIMEOUT = float(os.environ.get("GEMINI_TIMEOUT", "300"))
 
